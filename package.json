@@ -1,10 +1,10 @@
 {
-  "name": "llm-underview",
+  "name": "llm-underview-qn",
   "module": "index.ts",
   "type": "module",
   "private": true,
   "scripts": {
-    "dev:backend": "cd apps/backend && uv run fastapi dev main.py",
+    "dev:backend": "cd apps/api && uv run fastapi dev main.py",
     "dev:web": "bun --filter web dev"
   },
   "workspaces": [
