@@ -1,7 +1,10 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from jose import JWTError, jwt
 
 from auth import get_current_user, router as auth_router
@@ -85,3 +88,18 @@ async def websocket_endpoint(ws: WebSocket, token: str | None = None):
             await ws.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(ws)
+
+
+static_dir = Path(__file__).parent / "static"
+if static_dir.is_dir():
+    app.mount("/assets", StaticFiles(directory=str(static_dir / "assets")), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        file_path = static_dir / full_path
+        if file_path.is_file():
+            return FileResponse(str(file_path))
+        index = static_dir / "index.html"
+        if index.is_file():
+            return FileResponse(str(index))
+        return {"error": "not found"}
