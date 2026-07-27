@@ -141,7 +141,7 @@ apps/
 
 When a review is submitted via `POST /api/feedback`, the backend:
 
-1. Sends the raw text to Groq's `gemma2-9b-it` model
+1. Sends the raw text to Groq's `llama-3.3-70b-versatile` model
 2. Requests structured JSON with `response_format: {type: "json_object"}`
 3. Parses the response into: `sentiment`, `key_items`, `requires_action`
 4. Stores the result in PostgreSQL

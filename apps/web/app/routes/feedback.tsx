@@ -6,7 +6,7 @@ export default function FeedbackPage() {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     if (!text.trim()) return;
     setSubmitting(true);
@@ -23,11 +23,16 @@ export default function FeedbackPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-yellow-50 flex flex-col">
-      <div className="flex justify-end p-6">
+    <div className="relative min-h-screen bg-linear-to-br from-orange-50 via-white to-yellow-50 flex flex-col">
+      <div
+        className="absolute top-0 left-0 min-h-screen min-w-screen opacity-15 blur-sm z-0"
+        style={{ backgroundImage: "url('/feedback-bg.jpg')", backgroundSize: "cover" }}
+      >
+      </div>
+      <div className="flex justify-end p-6 z-20">
         <a
           href="/login"
-          className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-800 bg-white/70 backdrop-blur border border-gray-200 rounded-full px-5 py-2 shadow-sm hover:shadow-md transition-all"
+          className="inline-flex items-center gap-2 text-sm text-orange-950 font-medium bg-amber-300 shadow-yellow-400/30 shadow-sm outline outline-amber-900/20 rounded-full px-5 py-2  hover:shadow-md transition-all"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -36,28 +41,23 @@ export default function FeedbackPage() {
         </a>
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 pb-16">
+      <div className="flex-1 flex items-center justify-center px-4 pb-16 z-20">
         <div className="w-full max-w-lg">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 rounded-full mb-4">
-              <svg className="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900">Share Your Experience</h1>
-            <p className="text-gray-500 mt-2">We value your feedback — every review helps us improve.</p>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-orange-950">Share Your Experience</h1>
+            <p className="text-orange-950/50 mt-2">We value your feedback — every review helps us improve</p>
           </div>
 
-          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-8">
+          <div className="bg-white rounded-2xl shadow-amber-400/20 shadow-lg outline outline-amber-700/5 p-8">
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
+                <label className="hidden text-sm font-medium text-gray-700 mb-2">Your Review</label>
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder="The pizza was amazing and the service was outstanding..."
                   rows={5}
-                  className="w-full rounded-2xl border border-gray-200 px-5 py-4 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none transition-all"
+                  className="w-full rounded-xl border border-gray-200 px-5 py-4 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none transition-all"
                 />
                 <p className="text-xs text-gray-400 mt-1.5 text-right">{text.length} characters</p>
               </div>
@@ -65,7 +65,7 @@ export default function FeedbackPage() {
               <button
                 type="submit"
                 disabled={submitting || !text.trim()}
-                className="w-full rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-3.5 text-sm font-semibold text-white hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-orange-200 hover:shadow-xl transition-all"
+                className="w-full rounded-xl bg-linear-to-r from-orange-500 to-orange-600 px-5 py-3.5 text-sm font-semibold text-white hover:from-orange-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-orange-800/40 transition-all"
               >
                 {submitting ? (
                   <span className="inline-flex items-center gap-2">
@@ -103,8 +103,8 @@ export default function FeedbackPage() {
             )}
           </div>
 
-          <p className="text-xs text-gray-400 text-center mt-6">
-            Your feedback is anonymous and helps us serve you better.
+          <p className="text-xs text-orange-950/50 text-center mt-6">
+            Your feedback is anonymous and helps us serve you better!
           </p>
         </div>
       </div>
