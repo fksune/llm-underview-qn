@@ -9,6 +9,7 @@ import {
 
 import type { Route } from "./+types/root";
 import { AuthProvider } from "./lib/auth";
+import { FeatureProvider } from "./lib/features";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -24,16 +25,36 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+function DarkModeScript() {
+  return (
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `
+          (function() {
+            try {
+              var flags = JSON.parse(localStorage.getItem("feedback-feature-flags") || "[]");
+              if (flags.indexOf("darkMode") !== -1) {
+                document.documentElement.classList.add("dark");
+              }
+            } catch(e) {}
+          })();
+        `,
+      }}
+    />
+  );
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <DarkModeScript />
       </head>
-      <body>
+      <body className="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -44,9 +65,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Outlet />
-    </AuthProvider>
+    <FeatureProvider>
+      <AuthProvider>
+        <Outlet />
+      </AuthProvider>
+    </FeatureProvider>
   );
 }
 
