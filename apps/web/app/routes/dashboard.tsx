@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { fetchInsights, getWebSocketUrl } from "~/lib/api";
 import { useAuth } from "~/lib/auth";
-import { useFeature, useFeatureToggle } from "~/lib/features";
+import { useFeature } from "~/lib/features";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   PieChart, Pie, Cell,
@@ -18,7 +18,7 @@ interface Feedback {
 }
 
 const COLORS = { Positive: "#22c55e", Neutral: "#eab308", Negative: "#ef4444" };
-type Sentiment = "Positive" | "Neutral" | "Negative" | null;
+type Sentiment = "Positive" | "Neutral" | "Negative" | "urgent" | null;
 
 function computeStats(feedbacks: Feedback[]) {
   const total = feedbacks.length;
@@ -85,7 +85,6 @@ export default function DashboardPage() {
   const filterPillsEnabled = useFeature("filterPills");
   const dateSeparatorsEnabled = useFeature("dateSeparators");
   const darkModeEnabled = useFeature("darkMode");
-  const toggleFeature = useFeatureToggle();
 
   useEffect(() => {
     if (!isAuthenticated || !token) {
@@ -125,7 +124,9 @@ export default function DashboardPage() {
 
   const stats = computeStats(feedbacks);
 
-  const filtered = filter
+  const filtered = filter === "urgent"
+    ? feedbacks.filter((f) => f.requires_action)
+    : filter
     ? feedbacks.filter((f) => f.sentiment === filter)
     : feedbacks;
 
@@ -133,8 +134,6 @@ export default function DashboardPage() {
     () => (dateSeparatorsEnabled ? groupByDate(filtered) : [{ label: null, items: filtered }]),
     [filtered, dateSeparatorsEnabled]
   );
-
-  const FILLS = ["#22c55e", "#eab308", "#ef4444"];
 
   const sentimentColor = (s: string) => {
     switch (s) {
@@ -155,29 +154,23 @@ export default function DashboardPage() {
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">Feedback Dashboard</h1>
           <div className="flex items-center gap-4">
+            {darkModeEnabled && (
+              <button
+                onClick={() => { document.documentElement.classList.toggle("dark"); localStorage.setItem("feedback-theme", document.documentElement.classList.contains("dark") ? "dark" : "light"); }}
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                title="Toggle dark mode"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={darkModeEnabled ? "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" : "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"} />
+                </svg>
+              </button>
+            )}
             <button
               onClick={() => navigate("/features")}
               className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 underline"
             >
               Features
             </button>
-            {darkModeEnabled && (
-              <button
-                onClick={() => toggleFeature("darkMode")}
-                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                title="Toggle dark mode"
-              >
-                {darkModeEnabled ? (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                  </svg>
-                )}
-              </button>
-            )}
             <button
               onClick={handleLogout}
               className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 underline"
@@ -273,7 +266,7 @@ export default function DashboardPage() {
 
         {filterPillsEnabled && feedbacks.length > 0 && (
           <div className="flex gap-2 flex-wrap">
-            {([null, "Positive", "Neutral", "Negative"] as const).map((s) => (
+            {([null, "Positive", "Neutral", "Negative", "urgent"] as const).map((s) => (
               <button
                 key={s ?? "all"}
                 onClick={() => setFilter(s)}
@@ -283,7 +276,7 @@ export default function DashboardPage() {
                     : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600"
                 }`}
               >
-                {s ?? "All"}
+                {s === "urgent" ? "Urgent" : s ?? "All"}
               </button>
             ))}
           </div>

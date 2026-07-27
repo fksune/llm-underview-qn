@@ -40,7 +40,7 @@ export function FeatureProvider({ children }: { children: ReactNode }) {
       } else {
         next.add(flag);
       }
-saveFlags(next);
+      saveFlags(next);
       return next;
     });
   }, []);

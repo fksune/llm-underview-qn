@@ -32,8 +32,8 @@ function DarkModeScript() {
         __html: `
           (function() {
             try {
-              var flags = JSON.parse(localStorage.getItem("feedback-feature-flags") || "[]");
-              if (flags.indexOf("darkMode") !== -1) {
+              var theme = localStorage.getItem("feedback-theme");
+              if (theme === "dark") {
                 document.documentElement.classList.add("dark");
               }
             } catch(e) {}
