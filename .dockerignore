@@ -1,0 +1,14 @@
+.git
+.gitignore
+**/node_modules
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.env
+**/.env.*
+apps/web/build
+apps/api/static
+CODEA.md
+README.md
+LICENSE
+*.md
