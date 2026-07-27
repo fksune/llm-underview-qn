@@ -11,7 +11,7 @@ A full-stack application for collecting and analyzing restaurant reviews with LL
 | **Styling** | Tailwind CSS v4 | Utility-first, zero-runtime CSS, quick iteration |
 | **Database** | PostgreSQL via Neon (serverless) | Scalable, async driver (asyncpg), JSONB for structured LLM output |
 | **ORM** | SQLAlchemy 2.0 (async) | Mature, type-safe, great PostgreSQL dialect support |
-| **LLM** | Groq API (gemma2-9b-it) | Free tier, low latency, structured JSON output with `response_format` |
+| **LLM** | Groq API (llama-3.3-70b-versatile) | Free tier, low latency, structured JSON output with `response_format` |
 | **Auth** | JWT (python-jose) | Stateless, simple admin authentication |
 | **Real-time** | WebSockets (FastAPI native) | Native async WebSocket support, no extra dependencies |
 
@@ -146,6 +146,41 @@ When a review is submitted via `POST /api/feedback`, the backend:
 3. Parses the response into: `sentiment`, `key_items`, `requires_action`
 4. Stores the result in PostgreSQL
 5. Broadcasts the record to all connected admin WebSocket clients
+
+## Deployment (Render)
+
+### One-click via Docker
+
+The repo includes a `Dockerfile` and `render.yaml` for easy deployment on Render as a single Docker web service — no GitHub connection required.
+
+### Manual Steps
+
+1. Go to https://dashboard.render.com → **New +** → **Web Service**
+2. Select **"Deploy from a public Git repository"**
+3. Paste your public repo URL
+4. Render auto-detects the `Dockerfile`
+5. Add environment variables:
+
+| Key | Value |
+|---|---|
+| `DATABASE_URL` | `postgresql+asyncpg://user:pass@host/db?ssl=require` (Neon) |
+| `GROQ_API_KEY` | `gsk_...` |
+| `ADMIN_EMAIL` | `admin@example.com` |
+| `ADMIN_PASSWORD` | (your password) |
+| `JWT_SECRET` | (Render can auto-generate this) |
+
+6. Click **Create Web Service**
+
+The Docker image builds the frontend with Node.js + Bun, then packages it with the Python backend. FastAPI serves both the API and the SPA from the same port — no extra proxy config needed.
+
+### What gets deployed
+
+- `/` — Public review form
+- `/login` — Admin login
+- `/dashboard` — Protected dashboard with charts, real-time WebSocket updates
+- `/docs` — API Docs in OpenAPI format
+- `/api/*` — All API endpoints
+- `/ws` — WebSocket endpoint
 
 ## Security Notes
 
