@@ -1,0 +1,19 @@
+{
+  "name": "llm-underview",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev:backend": "cd apps/backend && uv run fastapi dev main.py",
+    "dev:web": "bun --filter web dev"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
