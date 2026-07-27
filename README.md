@@ -173,7 +173,7 @@ The repo includes a `Dockerfile` and `render.yaml` for easy deployment on Render
 
 The Docker image builds the frontend with Node.js + Bun, then packages it with the Python backend. FastAPI serves both the API and the SPA from the same port — no extra proxy config needed.
 
-### What gets deployed
+### What Gets Deployed
 
 - `/` — Public review form
 - `/login` — Admin login
